@@ -1,0 +1,112 @@
+Optical Character Recognition (OCR) using Python, OpenCV & Tesseract
+
+This project performs OCR on handwritten and printed text using:
+
+Tesseract OCR
+
+OpenCV
+
+Python
+
+IAM Handwritten Dataset (Kaggle)
+
+The system reads images, preprocesses them, and extracts text automatically.
+
+🚀 Features
+
+✔ Preprocessing (grayscale, denoising, thresholding)
+✔ OCR using Tesseract
+✔ Works on handwritten text
+✔ Google Colab support
+✔ Easy to run and modify
+✔ Displays processed images + extracted text
+
+📂 Dataset
+
+This project uses the IAM Handwritten Dataset from Kaggle.
+
+Dataset Link:
+Search on Kaggle → IAM Handwritten Forms Dataset
+
+Upload any sample image to /samples/ or directly in Colab.
+
+🛠 Installation
+Install Requirements Locally
+pip install -r requirements.txt
+
+Install Tesseract (Windows)
+
+Download:
+https://github.com/UB-Mannheim/tesseract/wiki
+
+Then set path manually:
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+▶ Run the Project (Local)
+python main.py
+
+
+Upload an image when prompted.
+
+▶ Run in Google Colab
+
+Simply upload the file main.ipynb in Colab → Run All
+
+Colab automatically installs Tesseract and OpenCV.
+
+📌 Code Used (main.py)
+import cv2
+import pytesseract
+from matplotlib import pyplot as plt
+from PIL import Image
+import numpy as np
+
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'  # For Google Colab
+
+def preprocess_image(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (5,5), 0)
+    thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)[1]
+    return gray, thresh
+
+def extract_text(image):
+    text = pytesseract.image_to_string(image)
+    return text
+
+def main():
+    path = input("Enter image path: ")
+    img = cv2.imread(path)
+
+    gray, thresh = preprocess_image(img)
+    text = extract_text(gray)
+
+    print("\nExtracted Text:\n", text)
+
+    plt.figure(figsize=(12,5))
+    plt.subplot(1,3,1)
+    plt.title('Original')
+    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+    plt.subplot(1,3,2)
+    plt.title('Gray')
+    plt.imshow(gray, cmap='gray')
+
+    plt.subplot(1,3,3)
+    plt.title('Threshold')
+    plt.imshow(thresh, cmap='gray')
+    plt.show()
+
+    # Save results
+    with open("results/extracted_text.txt", "w") as f:
+        f.write(text)
+
+if __name__ == "__main__":
+    main()
+
+📦 3. requirements.txt
+pytesseract
+opencv-python
+Pillow
+matplotlib
+numpy
